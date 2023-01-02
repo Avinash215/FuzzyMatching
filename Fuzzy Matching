@@ -1,0 +1,32 @@
+Fuzzy matching is a technique used to match strings that are similar, but not necessarily identical. There are several ways to perform fuzzy matching in Python, but one way to do it is by using the fuzzywuzzy library. Here is an example of how you could use fuzzy matching to compare two pandas DataFrames:
+
+from fuzzywuzzy import fuzz
+import pandas as pd
+
+# Load the two DataFrames
+df1 = pd.read_csv('data1.csv')
+df2 = pd.read_csv('data2.csv')
+
+# Create a column in each DataFrame to store the matching scores
+df1['match_score'] = None
+df2['match_score'] = None
+
+# Iterate through each row in both DataFrames and calculate the matching score
+for index1, row1 in df1.iterrows():
+    for index2, row2 in df2.iterrows():
+        score = fuzz.token_set_ratio(row1['column_name'], row2['column_name'])
+        df1.at[index1, 'match_score'] = score
+        df2.at[index2, 'match_score'] = score
+
+# Sort the DataFrames by the match_score column in descending order
+df1 = df1.sort_values(by='match_score', ascending=False)
+df2 = df2.sort_values(by='match_score', ascending=False)
+
+# Display the top 10 matching rows from each DataFrame
+print(df1.head(10))
+print(df2.head(10))
+
+
+This code will calculate the matching scores between the rows in the two DataFrames using the fuzz.token_set_ratio function from the fuzzywuzzy library. The token_set_ratio function returns a score between 0 and 100 indicating the similarity between the two strings. The higher the score, the more similar the strings are.
+
+You can adjust the matching criteria by using a different function from the fuzzywuzzy library, such as fuzz.token_sort_ratio or fuzz.ratio. You can also adjust the minimum matching score that is required by adding a condition to the code that filters out rows with a score below a certain threshold.
